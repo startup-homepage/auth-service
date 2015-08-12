@@ -1,0 +1,23 @@
+{
+  "name": "auth-service",
+  "version": "0.0.0",
+  "description": "Json web token authentication service",
+  "main": "server.js",
+  "dependencies": {
+    "express": "~4.13.3",
+    "body-parser": "~1.13.3",
+    "jsonwebtoken": "~5.0.4",
+    "mongoose": "~4.1.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [
+    "jwt",
+    "authentication"
+  ],
+  "author": "Seva Dolgopolov <zavalit@gmail.com>",
+  "license": "MIT"
+}
