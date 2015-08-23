@@ -1,8 +1,14 @@
 var routes = require('express').Router();
+var config = require('./config.js');
 var superSecret = require('./config.js').secret;
 var tokenTTL = require('./config.js').tokenTTL;
 var jwt = require('jsonwebtoken');
 var UserModel = require('./models/User.js');
+var rest = require('rest');
+var request = require('request');
+var TwitterStrategy = require('./stratagies/twitter.js');
+var GoogleStrategy = require('./stratagies/google.js');
+var FacebookStrategy = require('./stratagies/facebook.js');
 
 routes.get('/setup', function(req, res) {
 
@@ -21,7 +27,51 @@ routes.get('/setup', function(req, res) {
 	});
 });
 
+routes.get('/fb/:app_id/', function(req, res){
 
+	console.log('HERE am i on fb');
+	(new FacebookStrategy(config.facebook.oauth2))
+	.setRequest(req)
+	.setResponse(res)
+	.setUserModel(UserModel)
+	.handle(
+		function(res, user){
+			createJWTResponse(res, user)
+		}
+	);
+
+
+});
+
+routes.get('/twitter/:api_key/', function(req, res){
+
+  (new TwitterStrategy(config.twitter.oauth))
+	.setRequest(req)
+	.setResponse(res)
+	.setUserModel(UserModel)
+	.handle(
+		function(res, user){
+			createJWTResponse(res, user)
+		}
+	);
+
+})
+
+
+routes.get('/google/:api_key/', function(req, res){
+
+
+  (new GoogleStrategy(config.google.oauth2))
+	.setRequest(req)
+	.setResponse(res)
+	.setUserModel(UserModel)
+	.handle(
+		function(res, user){
+			createJWTResponse(res, user)
+		}
+	);
+
+})
 
 
 routes.post('/signup', function(req, res, next){
@@ -85,10 +135,13 @@ routes.post('/authenticate', function(req, res){
 
 });
 
+
+
+
 function createJWTResponse(res, user){
 
 	var token = jwt.sign(user, superSecret, { expiresInMinutes: tokenTTL })
-
+	console.log('JWT created!');
 	res.json({
 		success: true,
 		message: 'Enjoy your token!',
@@ -126,6 +179,7 @@ var failed = function(res, msg){
     message: msg
   })
 }
+
 
 
 module.exports = routes;
